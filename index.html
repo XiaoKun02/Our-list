@@ -60,26 +60,32 @@
         }
 
         .lista-container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
-            border: 1px solid #ffe3e8;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
+    border: 1px solid #ffe3e8;
+    max-width: 1400px;
+    margin: 0 auto;
+    
+    /* Attiva la griglia desktop a 4 colonne */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
 
-        .list-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 12px 8px;
-            border-bottom: 1px dashed #ffe3e8;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            word-break: break-word;
-        }
+       .list-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 10px;
+    border: 1px dashed #ffe3e8;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    word-break: break-word;
+}
 
         .list-item:hover {
             background-color: #fff0f3;
@@ -113,6 +119,23 @@
             font-size: 1.2rem;
             padding: 20px;
         }
+
+        /* --- RESPONSIVE DESIGN --- */
+
+/* Schermi sotto i 1200px: 2 colonne */
+@media (max-width: 1200px) {
+    .lista-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Schermi sotto i 600px: 1 colonna */
+@media (max-width: 600px) {
+    .lista-container {
+        grid-template-columns: 1fr;
+    }
+}
+        
     </style>
 </head>
 <body>
