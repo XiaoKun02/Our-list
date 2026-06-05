@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>100 Cose da Fare Insieme 💕</title>
-    <!-- Carica la libreria ufficiale di Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -128,19 +127,17 @@
     </div>
 
     <script>
-        // CONFIGURAZIONE DI SUPABASE - INSERITA AUTOMATICAMENTE
         const SUPABASE_URL = "https://sglyqkmtsrxaysvqjgjp.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_9xmdBX28JJ5Ql8P9WxmzXw_3Gf6vRdG";
+        const SUPABASE_KEY = "sb_publishable_9xmdBX28JJ5Ql8P9WxmzXw_3Gf6vRdG"; 
         
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let listaDati = [];
 
-        // Lista dei 100 punti
         const vociIniziali = [
             "一起过生日 🎂", "一起去旅行 🧳", "一起过情人节 💖", "一起吃海底捞 🍲", "一起吊娃娃 🧸",
             "一起去海边 🌊", "一起回老家 🏠", "一起看电影 🎬", "一起大扫除 ✔️", "一起穿情侣装 👫",
             "一起吃火锅 🍲", "一起吃烤肉 🍖", "一起吃烤鱼 🐟", "一起吃宵夜 🌌", "一起打羽毛球 🏸",
-            "一起逛菜市场 🥬", "一起做饭 🍳", "一起跑步 跑", "一起搬家 📦", "一起去游乐园 🎡",
+            "一起逛菜市场 🥬", "一起做饭 🍳", "一起跑步 🏃", "一起搬家 📦", "一起去游乐园 🎡",
             "一起制作专属相册 📸", "一起用情侣手机壳 📱", "一起用勺子吃西瓜 🍉", "一起发朋友圈合照 📱",
             "一起海边看日落 🌅", "一起拍日常vlog 📹", "一起庆祝纪念日 🎉", "一起晚饭后散步 🚶",
             "一起跟朋友吃饭 🧑‍🤝‍🧑", "一起换情侣头像 🤳", "一起玩五子棋 ⚪⚫", "一起骑电动车 🛵",
@@ -149,7 +146,7 @@
             "一起跨年 🎆", "一起健身 🏋️", "一起划船 🚣", "一起赏花 🌸", "一起熬夜 🌜",
             "一起种植物 🌱", "介绍彼此的朋友 👥", "给对方准备礼物 🎁", "难过时的陪伴 😌",
             "给我吹头发 🧑‍🦲", "给我穿鞋 👟", "照顾对方 🥣", "陪 me 做美甲 💅", "接我下班 🚶‍♀️",
-            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 12 💒", "一起去听一场演唱会 🎤",
+            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 💒", "一起去听一场演唱会 🎤",
             "一起去农场摘水果 🍎", "一起逛盒马鲜生 🛒", "一起逛花鸟市场 🐦", "一起拍情侣写真 📸",
             "一起去南山祈福 🙏", "一起去水上乐园 🏊", "一起海边看日出 🌅", "一起坐绿皮火车 🚂",
             "一起去天涯海角 🌊", "一起去迪士尼 🏰", "一起放孔明灯 🎈", "一起户外烧烤 🍢",
@@ -162,18 +159,22 @@
         ];
 
         async function init() {
-            let { data: items, error } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
-            
-            if (!items || items.length === 0) {
-                const batch = vociIniziali.map((text, index) => ({ id: index + 1, text: text, completed: false }));
-                await _supabase.from('lista100').insert(batch);
-                let { data: reloaded } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
-                listaDati = reloaded;
-            } else {
-                listaDati = items;
+            try {
+                let { data: items, error } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+                
+                if (!items || items.length === 0) {
+                    const batch = vociIniziali.map((text, index) => ({ id: index + 1, text: text, completed: false }));
+                    await _supabase.from('lista100').insert(batch);
+                    let { data: reloaded } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+                    listaDati = reloaded;
+                } else {
+                    listaDati = items;
+                }
+                renderizzaLista();
+                ascoltaCambiamentiInTempoReale();
+            } catch (e) {
+                document.getElementById('lista').innerText = "Errore di caricamento.";
             }
-            renderizzaLista();
-            ascoltaCambiamentiInTempoReale();
         }
 
         function renderizzaLista() {
@@ -211,7 +212,7 @@
 
                 container.appendChild(div);
             });
-            document.getElementById('done-count').innerText =打卡 fatti;
+            document.getElementById('done-count').innerText = fatti;
         }
 
         function updateContatoreGenerale() {
