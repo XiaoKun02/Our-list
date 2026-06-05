@@ -220,29 +220,26 @@
 
                 let lastTap = 0;
                 const toggleStato = async () => {
-                    const nuovoStato = !item.completed;
-                    
-                    // Modifica grafica immediata (ottimistica)
-                    div.classList.toggle('completed');
-                    item.completed = nuovoStato;
-                    updateContatoreGenerale();
-                    
-                    // Invio aggiornamento a Supabase con controllo errori alternativo
-                    const { error } = await _supabase
-                        .from('lista100')
-                        .update({ completed: nuevoStato })
-                        .eq('id', item.id);
+    const nuovoStato = !item.completed; // <--- Definito con "uo"
+    
+    div.classList.toggle('completed');
+    item.completed = nuovoStato;
+    updateContatoreGenerale();
+    
+    const { error } = await _supabase
+        .from('lista100')
+        .update({ completed: nuovoStato }) // <--- Corretto qui (c'era una "e")
+        .eq('id', item.id);
 
-                    if (error) {
-                        console.error("Errore nel salvataggio su Supabase:", error.message);
-                        alert("Attenzione: Il database ha rifiutato la modifica!\nMotivo: " + error.message);
-                        
-                        // Ripristina lo stato precedente se si verifica un errore
-                        item.completed = !nuovoStato;
-                        div.classList.toggle('completed');
-                        updateContatoreGenerale();
-                    }
-                };
+    if (error) {
+        console.error("Errore nel salvataggio su Supabase:", error.message);
+        alert("Attenzione: Il database ha rifiutato la modifica!\nMotivo: " + error.message);
+        
+        item.completed = !nuovoStato;
+        div.classList.toggle('completed');
+        updateContatoreGenerale();
+    }
+};
 
                 div.addEventListener('dblclick', toggleStato);
                 div.addEventListener('touchend', (e) => {
