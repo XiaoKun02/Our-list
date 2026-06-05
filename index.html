@@ -1,2 +1,239 @@
-const SUPABASE_URL = "https://sglyqkmtsrxaysvqjgjp.supabase.co"; 
-const SUPABASE_KEY = "sb_publishable_9xmdBX28JJ5Ql8P9WxmzXw_3Gf6vRdG";
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>100 Cose da Fare Insieme 💕</title>
+    <!-- Carica la libreria ufficiale di Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #fff5f5;
+            --primary-color: #ff7597;
+            --secondary-color: #ff4a75;
+            --text-color: #5c3a41;
+            --card-bg: #ffffff;
+            --done-color: #bfa3a8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, "Microsoft YaHei", "PingFang SC";
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#ffccd5 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--text-color);
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+        }
+
+        h1::before, h1::after {
+            content: " ✨ ";
+        }
+
+        .counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            background: #ffe3e8;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffccd5;
+        }
+
+        .lista-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
+            border: 1px solid #ffe3e8;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 8px;
+            border-bottom: 1px dashed #ffe3e8;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            word-break: break-word;
+        }
+
+        .list-item:hover {
+            background-color: #fff0f3;
+            border-radius: 8px;
+        }
+
+        .number {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 12px;
+            min-width: 35px;
+        }
+
+        .text {
+            flex: 1;
+        }
+
+        .list-item.completed {
+            color: var(--done-color);
+            text-decoration: line-through;
+            opacity: 0.6;
+            background-color: #f9f6f6;
+        }
+        
+        .list-item.completed .number {
+            color: var(--done-color);
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <h1>Zyy&Hlr 打卡100见事 ❤️</h1>
+        <div class="counter">已完成: <span id="done-count">0</span>/100</div>
+    </div>
+
+    <div class="lista-container" id="lista">
+        <div class="loading">Connessione al database amoroso in corso... 💕</div>
+    </div>
+
+    <script>
+        // CONFIGURAZIONE DI SUPABASE - INSERITA AUTOMATICAMENTE
+        const SUPABASE_URL = "https://sglyqkmtsrxaysvqjgjp.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_9xmdBX28JJ5Ql8P9WxmzXw_3Gf6vRdG";
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let listaDati = [];
+
+        // Lista dei 100 punti
+        const vociIniziali = [
+            "一起过生日 🎂", "一起去旅行 🧳", "一起过情人节 💖", "一起吃海底捞 🍲", "一起吊娃娃 🧸",
+            "一起去海边 🌊", "一起回老家 🏠", "一起看电影 🎬", "一起大扫除 ✔️", "一起穿情侣装 👫",
+            "一起吃火锅 🍲", "一起吃烤肉 🍖", "一起吃烤鱼 🐟", "一起吃宵夜 🌌", "一起打羽毛球 🏸",
+            "一起逛菜市场 🥬", "一起做饭 🍳", "一起跑步 跑", "一起搬家 📦", "一起去游乐园 🎡",
+            "一起制作专属相册 📸", "一起用情侣手机壳 📱", "一起用勺子吃西瓜 🍉", "一起发朋友圈合照 📱",
+            "一起海边看日落 🌅", "一起拍日常vlog 📹", "一起庆祝纪念日 🎉", "一起晚饭后散步 🚶",
+            "一起跟朋友吃饭 🧑‍🤝‍🧑", "一起换情侣头像 🤳", "一起玩五子棋 ⚪⚫", "一起骑电动车 🛵",
+            "一起去小吃街 🍢", "一起自驾游 🚗", "一起打电动 🎮", "一起玩游戏 🎯", "一起看球赛 ⚽",
+            "一起剪头发 ✂️", "一起刮彩票 🎫", "一起逛超市 🛒", "一起买家具 🛋️", "一起打扑克 ♠️",
+            "一起跨年 🎆", "一起健身 🏋️", "一起划船 🚣", "一起赏花 🌸", "一起熬夜 🌜",
+            "一起种植物 🌱", "介绍彼此的朋友 👥", "给对方准备礼物 🎁", "难过时的陪伴 😌",
+            "给我吹头发 🧑‍🦲", "给我穿鞋 👟", "照顾对方 🥣", "陪 me 做美甲 💅", "接我下班 🚶‍♀️",
+            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 12 💒", "一起去听一场演唱会 🎤",
+            "一起去农场摘水果 🍎", "一起逛盒马鲜生 🛒", "一起逛花鸟市场 🐦", "一起拍情侣写真 📸",
+            "一起去南山祈福 🙏", "一起去水上乐园 🏊", "一起海边看日出 🌅", "一起坐绿皮火车 🚂",
+            "一起去天涯海角 🌊", "一起去迪士尼 🏰", "一起放孔明灯 🎈", "一起户外烧烤 🍢",
+            "一起郊游踏青 🌿", "一起坐直升机 🚁", "一起去植物园 🌳", "一起去动物园 🐼",
+            "一起坐飞机 ✈️", "一起住民宿 🏡", "一起去体检 🏥", "一起看烟花 🎆", "一起打雪仗 ❄️",
+            "一起敷面膜 💆", "一起坐缆车 🚡", "一起去K歌 🎤", "一起钓鱼 🎣", "一起潜水 🤿",
+            "一起冲浪 🏄", "一起露营 ⛺", "一起爬山 🧗", "一起漂流 🛶", "一起喝酒 🥂",
+            "一起泡脚 🦶", "一起见对方父母 👨‍👩‍👧‍👦", "一起出国旅游 ✈️", "一起领结婚证 📜",
+            "一起买房子 🏠", "一起结婚 💒", "一起生娃 👶", "一起白头偕老 💕"
+        ];
+
+        async function init() {
+            let { data: items, error } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+            
+            if (!items || items.length === 0) {
+                const batch = vociIniziali.map((text, index) => ({ id: index + 1, text: text, completed: false }));
+                await _supabase.from('lista100').insert(batch);
+                let { data: reloaded } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+                listaDati = reloaded;
+            } else {
+                listaDati = items;
+            }
+            renderizzaLista();
+            ascoltaCambiamentiInTempoReale();
+        }
+
+        function renderizzaLista() {
+            const container = document.getElementById('lista');
+            container.innerHTML = '';
+            let fatti = 0;
+
+            listaDati.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `list-item ${item.completed ? 'completed' : ''}`;
+                div.innerHTML = `<span class="number">${item.id}.</span><span class="text">${item.text}</span>`;
+                
+                if(item.completed) fatti++;
+
+                let lastTap = 0;
+                const toggleStato = async () => {
+                    const nuovoStato = !item.completed;
+                    div.classList.toggle('completed');
+                    item.completed = nuovoStato;
+                    updateContatoreGenerale();
+                    
+                    await _supabase.from('lista100').update({ completed: nuevoStato }).eq('id', item.id);
+                };
+
+                div.addEventListener('dblclick', toggleStato);
+                div.addEventListener('touchend', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    if (tapLength < 300 && tapLength > 0) {
+                        toggleStato();
+                        e.preventDefault();
+                    }
+                    lastTap = currentTime;
+                });
+
+                container.appendChild(div);
+            });
+            document.getElementById('done-count').innerText =打卡 fatti;
+        }
+
+        function updateContatoreGenerale() {
+            const completati = listaDati.filter(i => i.completed).length;
+            document.getElementById('done-count').innerText = completati;
+        }
+
+        function ascoltaCambiamentiInTempoReale() {
+            _supabase
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'lista100' }, payload => {
+                    const rigaAggiornata = payload.new;
+                    const index = listaDati.findIndex(i => i.id === rigaAggiornata.id);
+                    if (index !== -1) {
+                        listaDati[index].completed = rigaAggiornata.completed;
+                        renderizzaLista();
+                    }
+                })
+                .subscribe();
+        }
+
+        init();
+    </script>
+</body>
+</html>
