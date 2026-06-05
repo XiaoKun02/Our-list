@@ -59,37 +59,37 @@
             border: 1px solid #ffccd5;
         }
 
+        /* GRIGLIA RESPONSIVA - REINSERITA E OTTIMIZZATA */
         .lista-container {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
-    border: 1px solid #ffe3e8;
-    max-width: 1400px;
-    margin: 0 auto;
-    
-    /* Attiva la griglia desktop a 4 colonne */
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-}
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
+            border: 1px solid #ffe3e8;
+            max-width: 1400px;
+            margin: 0 auto;
+            
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 Colonne su Desktop */
+            gap: 15px;
+        }
 
-       .list-item {
-    display: flex;
-    align-items: flex-start;
-    padding: 15px 10px;
-    border: 1px dashed #ffe3e8;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    word-break: break-word;
-}
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 10px;
+            border: 1px dashed #ffe3e8; /* Bordo a riquadro per la griglia */
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            word-break: break-word;
+        }
 
         .list-item:hover {
             background-color: #fff0f3;
-            border-radius: 8px;
+            border-color: var(--primary-color);
         }
 
         .number {
@@ -108,6 +108,7 @@
             text-decoration: line-through;
             opacity: 0.6;
             background-color: #f9f6f6;
+            border-style: solid;
         }
         
         .list-item.completed .number {
@@ -118,24 +119,23 @@
             text-align: center;
             font-size: 1.2rem;
             padding: 20px;
+            grid-column: span 4;
         }
 
-        /* --- RESPONSIVE DESIGN --- */
+        /* MEDIA QUERIES PER RESPONSIVE */
+        @media (max-width: 1200px) {
+            .lista-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 Colonne sotto i 1200px */
+            }
+            .loading { grid-column: span 2; }
+        }
 
-/* Schermi sotto i 1200px: 2 colonne */
-@media (max-width: 1200px) {
-    .lista-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Schermi sotto i 600px: 1 colonna */
-@media (max-width: 600px) {
-    .lista-container {
-        grid-template-columns: 1fr;
-    }
-}
-        
+        @media (max-width: 600px) {
+            .lista-container {
+                grid-template-columns: 1fr; /* 1 Colonna sotto i 600px */
+            }
+            .loading { grid-column: span 1; }
+        }
     </style>
 </head>
 <body>
@@ -169,7 +169,7 @@
             "一起跨年 🎆", "一起健身 🏋️", "一起划船 🚣", "一起赏花 🌸", "一起熬夜 🌜",
             "一起种植物 🌱", "介绍彼此的朋友 👥", "给对方准备礼物 🎁", "难过时的陪伴 😌",
             "给我吹头发 🧑‍🦲", "给我穿鞋 👟", "照顾对方 🥣", "陪 me 做美甲 💅", "接我下班 🚶‍♀️",
-            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 💒", "一起去听一场演唱会 🎤",
+            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 婚礼 💒", "一起去听一场演唱会 🎤",
             "一起去农场摘水果 🍎", "一起逛盒马鲜生 🛒", "一起逛花鸟市场 🐦", "一起拍情侣写真 📸",
             "一起去南山祈福 🙏", "一起去水上乐园 🏊", "一起海边看日出 🌅", "一起坐绿皮火车 🚂",
             "一起去天涯海角 🌊", "一起去迪士尼 🏰", "一起放孔明灯 🎈", "一起户外烧烤 🍢",
@@ -185,6 +185,12 @@
             try {
                 let { data: items, error } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
                 
+                if (error) {
+                    console.error("Errore di caricamento iniziale:", error.message);
+                    document.getElementById('lista').innerText = "Errore di connessione al database: " + error.message;
+                    return;
+                }
+
                 if (!items || items.length === 0) {
                     const batch = vociIniziali.map((text, index) => ({ id: index + 1, text: text, completed: false }));
                     await _supabase.from('lista100').insert(batch);
@@ -196,7 +202,7 @@
                 renderizzaLista();
                 ascoltaCambiamentiInTempoReale();
             } catch (e) {
-                document.getElementById('lista').innerText = "Errore di caricamento.";
+                document.getElementById('lista').innerText = "Errore critico di caricamento.";
             }
         }
 
@@ -215,29 +221,27 @@
                 let lastTap = 0;
                 const toggleStato = async () => {
                     const nuovoStato = !item.completed;
+                    
+                    // Modifica grafica immediata (ottimistica)
                     div.classList.toggle('completed');
                     item.completed = nuovoStato;
                     updateContatoreGenerale();
                     
-                    const toggleStato = async () => {
-    const nuovoStato = !item.completed;
-    div.classList.toggle('completed');
-    item.completed = nuovoStato;
-    updateContatoreGenerale();
-    
-    // Codice aggiornato con gestione dell'errore:
-    const { error } = await _supabase
-        .from('lista100')
-        .update({ completed: nuevoStato })
-        .eq('id', item.id);
+                    // Invio aggiornamento a Supabase con controllo errori alternativo
+                    const { error } = await _supabase
+                        .from('lista100')
+                        .update({ completed: nuevoStato })
+                        .eq('id', item.id);
 
-    if (error) {
-        console.error("Errore di sincronizzazione Supabase:", error.message);
-        // Ripristina lo stato grafico se l'update fallisce
-        item.completed = !nuevoStato;
-        renderizzaLista();
-    }
-};
+                    if (error) {
+                        console.error("Errore nel salvataggio su Supabase:", error.message);
+                        alert("Attenzione: Il database ha rifiutato la modifica!\nMotivo: " + error.message);
+                        
+                        // Ripristina lo stato precedente se si verifica un errore
+                        item.completed = !nuovoStato;
+                        div.classList.toggle('completed');
+                        updateContatoreGenerale();
+                    }
                 };
 
                 div.addEventListener('dblclick', toggleStato);
