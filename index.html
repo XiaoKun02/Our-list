@@ -196,7 +196,25 @@
                     item.completed = nuovoStato;
                     updateContatoreGenerale();
                     
-                    await _supabase.from('lista100').update({ completed: nuevoStato }).eq('id', item.id);
+                    const toggleStato = async () => {
+    const nuovoStato = !item.completed;
+    div.classList.toggle('completed');
+    item.completed = nuovoStato;
+    updateContatoreGenerale();
+    
+    // Codice aggiornato con gestione dell'errore:
+    const { error } = await _supabase
+        .from('lista100')
+        .update({ completed: nuevoStato })
+        .eq('id', item.id);
+
+    if (error) {
+        console.error("Errore di sincronizzazione Supabase:", error.message);
+        // Ripristina lo stato grafico se l'update fallisce
+        item.completed = !nuevoStato;
+        renderizzaLista();
+    }
+};
                 };
 
                 div.addEventListener('dblclick', toggleStato);
