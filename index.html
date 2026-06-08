@@ -3,63 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Una canzone per te... 🎵</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title> Zyy💕Hlr</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+        :root {
+            --bg-color: #fff5f5;
+            --primary-color: #ff7597;
+            --secondary-color: #ff4a75;
+            --text-color: #5c3a41;
+            --card-bg: #ffffff;
+            --done-color: #bfa3a8;
         }
-        .loader-container {
-            text-align: center;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border-left-color: #ff3a3a; /* Rosso tipico dell'app musicale come tocco di stile */
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        h1 { font-size: 1.2rem; font-weight: 400; letter-spacing: 0.5px; }
-    </style>
-    <script>
-        // Elenco dei deep link delle canzoni
-        const canzoni = [
-            "orpheus://song/32507038/?/autoplay=1",       // 演员
-            "orpheus://song/27955654/?/autoplay=1",       // 其实
-            "orpheus://song/169185/?/autoplay=1",         // 认真的雪
-            "orpheus://song/27955653/?/autoplay=1",       // 你还要我怎样
-            "orpheus://song/415792881/?/autoplay=1",      // 刚刚好
-            "orpheus://song/1463165983/?/autoplay=1",     // 天外来物
-            "orpheus://song/516657051/?/autoplay=1",      // 像风一样
-            "orpheus://song/32192436/?/autoplay=1",       // 绅士
-            "orpheus://song/27808044/?/autoplay=1",       // 丑八怪
-            "orpheus://song/468517654/?/autoplay=1",      // 动物世界
-            "orpheus://song/417859631/?/autoplay=1",      // 我好像在哪里见过你
-            "orpheus://song/2648841571/?/autoplay=1"      // 租购
-        ];
 
-        window.onload = function() {
-            // Sceglie una canzone a caso dall'elenco
-            const linkCasuale = canzoni[Math.floor(Math.random() * canzoni.length)];
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, "Microsoft YaHei", "PingFang SC";
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#ffccd5 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--text-color);
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+        }
+
+        h1::before, h1::after {
+            content: " ✨ ";
+        }
+
+        .counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            background: #ffe3e8;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffccd5;
+        }
+
+        .lista-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(255, 117, 151, 0.15);
+            border: 1px solid #ffe3e8;
+            max-width: 1400px;
+            margin: 0 auto;
             
-            // Forza l'apertura immediata dell'applicazione musicale
-            window.location.href = linkCasuale;
-        };
-    </script>
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 10px;
+            border: 1px dashed #ffe3e8;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            word-break: break-word;
+        }
+
+        .list-item:hover {
+            background-color: #fff0f3;
+            border-color: var(--primary-color);
+        }
+
+        .number {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 12px;
+            min-width: 35px;
+        }
+
+        .text {
+            flex: 1;
+        }
+
+        .list-item.completed {
+            color: var(--done-color);
+            text-decoration: line-through;
+            opacity: 0.6;
+            background-color: #f9f6f6;
+            border-style: solid;
+        }
+        
+        .list-item.completed .number {
+            color: var(--done-color);
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 20px;
+            grid-column: span 4;
+        }
+
+        @media (max-width: 1200px) {
+            .lista-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .loading { grid-column: span 2; }
+        }
+
+        @media (max-width: 600px) {
+            .lista-container {
+                grid-template-columns: 1fr;
+            }
+            .loading { grid-column: span 1; }
+        }
+    </style>
 </head>
 <body>
-    <div class="loader-container">
-        <div class="spinner"></div>
-        <h1>Scegliendo la traccia perfetta... 🎧</h1>
+
+    <div class="header-container">
+        <h1>Zyy&Hlr 打卡100件事 ❤️</h1>
+        <div class="counter">已完成: <span id="done-count">0</span>/100</div>
     </div>
+
+    <div class="lista-container" id="lista">
+        <div class="loading">Connessione al database amoroso in corso... 💕</div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://sglyqkmtsrxaysvqjgjp.supabase.co"; 
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnbHlxa210c3J4YXlzdnFqZ2pwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTc5MzAsImV4cCI6MjA5NjIzMzkzMH0.V3E8Wslba4j8nQd99j2EWArj_QnEaxEO6NEjRVDEFac"; 
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let listaDati = [];
+
+        const vociIniziali = [
+            "一起过生日 🎂", "一起去旅行 🧳", "一起过情人节 💖", "一起吃海底捞 🍲", "一起吊娃娃 🧸",
+            "一起去海边 🌊", "一起回老家 🏠", "一起看电影 🎬", "一起大扫除 ✔️", "一起穿情侣装 👫",
+            "一起吃火锅 🍲", "一起吃烤肉 🍖", "一起吃烤鱼 🐟", "一起吃宵夜 🌌", "一起打羽毛球 🏸",
+            "一起逛菜市场 🥬", "一起做饭 🍳", "一起跑步 🏃", "一起搬家 📦", "一起去游乐园 🎡",
+            "一起制作专属相册 📸", "一起用情侣手机壳 📱", "一起用勺子吃西瓜 🍉", "一起发朋友圈合照 📱",
+            "一起海边看日落 🌅", "一起拍日常vlog 📹", "一起庆祝纪念日 🎉", "一起晚饭后散步 🚶",
+            "一起跟朋友吃饭 🧑‍🤝‍🧑", "一起换情侣头像 🤳", "一起玩五子棋 ⚪⚫", "一起骑电动车 🛵",
+            "一起去小吃街 🍢", "一起自驾游 🚗", "一起打电动 🎮", "一起玩游戏 🎯", "一起看球赛 ⚽",
+            "一起剪头发 ✂️", "一起刮彩票 🎫", "一起逛超市 🛒", "一起买家具 🛋️", "一起打扑克 ♠️",
+            "一起跨年 🎆", "一起健身 🏋️", "一起划船 🚣", "一起赏花 🌸", "一起熬夜 🌜",
+            "一起种植物 🌱", "介绍彼此的朋友 👥", "给对方准备礼物 🎁", "难过时的陪伴 😌",
+            "给我吹头发 🧑‍🦲", "给我穿鞋 👟", "照顾对方 🥣", "陪 me 做美甲 💅", "接我下班 🚶‍♀️",
+            "拥有车子 🚗", "给我送花 💐", "吵架 😠", "一起参加别人的婚礼 婚礼 💒", "一起去听一场演唱会 🎤",
+            "一起去农场摘水果 🍎", "一起逛盒马鲜生 🛒", "一起逛花鸟 market 🐦", "一起拍情侣写真 📸",
+            "一起去南山祈福 🙏", "一起去水上乐园 🏊", "一起海边看日出 🌅", "一起坐绿皮火车 🚂",
+            "一起去天涯海角 🌊", "一起去迪士尼 🏰", "一起放孔明灯 🎈", "一起户外烧烤 🍢",
+            "一起郊游踏青 🌿", "一起坐直升机 🚁", "一起去植物园 🌳", "一起去动物园 🐼",
+            "一起坐飞机 ✈️", "一起住民宿 🏡", "一起去体检 🏥", "一起看烟花 🎆", "一起打雪仗 ❄️",
+            "一起敷面膜 💆", "一起坐缆车 🚡", "一起去K歌 🎤", "一起钓鱼 🎣", "一起潜水 🤿",
+            "一起冲浪 🏄", "一起露营 ⛺", "一起爬山 🧗", "一起漂流 🛶", "一起喝酒 🥂",
+            "一起泡脚 🦶", "一起见对方父母 👨‍👩‍👧‍👦", "一起出国旅游 ✈️", "一起领结婚证 📜",
+            "一起买房子 🏠", "一起结婚 💒", "一起生娃 👶", "一起白头偕老 💕"
+        ];
+
+        async function init() {
+            try {
+                let { data: items, error } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+                
+                if (error) {
+                    console.error("Errore di caricamento iniziale:", error.message);
+                    document.getElementById('lista').innerText = "Errore di connessione al database: " + error.message;
+                    return;
+                }
+
+                if (!items || items.length === 0) {
+                    const batch = vociIniziali.map((text, index) => ({ id: index + 1, text: text, completed: false }));
+                    await _supabase.from('lista100').insert(batch);
+                    let { data: reloaded } = await _supabase.from('lista100').select('*').order('id', { ascending: true });
+                    listaDati = reloaded;
+                } else {
+                    listaDati = items;
+                }
+                renderizzaLista();
+                ascoltaCambiamentiInTempoReale();
+            } catch (e) {
+                document.getElementById('lista').innerText = "Errore critico di caricamento.";
+            }
+        }
+
+        function renderizzaLista() {
+            const container = document.getElementById('lista');
+            container.innerHTML = '';
+            let fatti = 0;
+
+            listaDati.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `list-item ${item.completed ? 'completed' : ''}`;
+                div.innerHTML = `<span class="number">${item.id}.</span><span class="text">${item.text}</span>`;
+                
+                if(item.completed) fatti++;
+
+                let lastTap = 0;
+                const toggleStato = async () => {
+                    const nuovoStato = !item.completed;
+                    
+                    div.classList.toggle('completed');
+                    item.completed = nuovoStato;
+                    updateContatoreGenerale();
+                    
+                    const { error } = await _supabase
+                        .from('lista100')
+                        .update({ completed: nuovoStato })
+                        .eq('id', item.id);
+
+                    if (error) {
+                        console.error("Errore nel salvataggio su Supabase:", error.message);
+                        alert("Attenzione: Il database ha rifiutato la modifica!\nMotivo: " + error.message);
+                        
+                        item.completed = !nuovoStato;
+                        div.classList.toggle('completed');
+                        updateContatoreGenerale();
+                    }
+                };
+
+                div.addEventListener('dblclick', toggleStato);
+                div.addEventListener('touchend', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    if (tapLength < 300 && tapLength > 0) {
+                        toggleStato();
+                        e.preventDefault();
+                    }
+                    lastTap = currentTime;
+                });
+
+                container.appendChild(div);
+            });
+            document.getElementById('done-count').innerText = fatti;
+        }
+
+        function updateContatoreGenerale() {
+            const completati = listaDati.filter(i => i.completed).length;
+            document.getElementById('done-count').innerText = completati;
+        }
+
+        function ascoltaCambiamentiInTempoReale() {
+            _supabase
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'lista100' }, payload => {
+                    const rigaAggiornata = payload.new;
+                    const index = listaDati.findIndex(i => i.id === rigaAggiornata.id);
+                    if (index !== -1) {
+                        listaDati[index].completed = rigaAggiornata.completed;
+                        renderizzaLista();
+                    }
+                })
+                .subscribe();
+        }
+
+        init();
+    </script>
 </body>
 </html>
